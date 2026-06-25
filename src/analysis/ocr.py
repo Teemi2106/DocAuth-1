@@ -35,25 +35,62 @@ def _easyocr_extract(image_path: str | Path, languages: list[str], gpu: bool) ->
     except ImportError as e:
         raise ImportError("Install EasyOCR: pip install easyocr>=1.7.1") from e
 
-    key = (tuple(languages), gpu)
-    if key not in _easyocr_reader_cache:
-        _easyocr_reader_cache[key] = easyocr.Reader(languages, gpu=gpu)
-    reader = _easyocr_reader_cache[key]
+    image_path = Path(image_path)
+    if not image_path.exists():
+        raise FileNotFoundError(f"OCR image not found: {image_path}")
+    if image_path.stat().st_size == 0:
+        raise ValueError(f"OCR image is empty (0 bytes): {image_path}")
 
-    results = reader.readtext(str(image_path))
-    words = []
-    for bbox, text, conf in results:
-        words.append({
-            "text": text,
-            "confidence": round(float(conf), 4),
-            "bbox": [[int(p[0]), int(p[1])] for p in bbox],
-        })
-    full_text = " ".join(w["text"] for w in words)
-    avg_conf = float(np.mean([w["confidence"] for w in words])) if words else 0.0
-    return {"full_text": full_text, "words": words, "avg_confidence": round(avg_conf, 4), "engine": "easyocr"}
+    # EasyOCR delegates decoding to image backends that can fail for some
+    # image formats. Pre-validate with PIL and convert to a safe PNG.
+    try:
+        img = Image.open(image_path)
+        img = img.convert("RGB")
+    except Exception as e:
+        raise ValueError(f"Uploaded file could not be decoded as an image: {image_path}") from e
+
+    import tempfile
+
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+        tmp_path = Path(tmp.name)
+        img.save(tmp_path, format="PNG")
+
+    try:
+        key = (tuple(languages), gpu)
+        if key not in _easyocr_reader_cache:
+            _easyocr_reader_cache[key] = easyocr.Reader(languages, gpu=gpu)
+        reader = _easyocr_reader_cache[key]
+
+        results = reader.readtext(str(tmp_path))
+        words = []
+        for bbox, text, conf in results:
+            words.append(
+                {
+                    "text": text,
+                    "confidence": round(float(conf), 4),
+                    "bbox": [[int(p[0]), int(p[1])] for p in bbox],
+                }
+            )
+        full_text = " ".join(w["text"] for w in words)
+        avg_conf = float(np.mean([w["confidence"] for w in words])) if words else 0.0
+        return {
+            "full_text": full_text,
+            "words": words,
+            "avg_confidence": round(avg_conf, 4),
+            "engine": "easyocr",
+        }
+    finally:
+        try:
+            tmp_path.unlink(missing_ok=True)
+        except Exception:
+            pass
+
+
+
 
 
 # ── TrOCR ─────────────────────────────────────────────────────────────────────
+
 
 _trocr_model_cache: dict[str, tuple] = {}
 

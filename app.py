@@ -262,7 +262,17 @@ with tab3:
                 handwritten = st.toggle("Handwritten text mode (uses TrOCR)", value=False, key="ocr_hw")
                 with st.spinner("Extracting text..."):
                     from src.analysis.ocr import extract_text
-                    ocr_result = extract_text(doc_path, handwritten=handwritten)
+                    try:
+                        ocr_result = extract_text(doc_path, handwritten=handwritten)
+                    except Exception as e:
+                        st.error(
+                            "OCR failed to decode this file. "
+                            "Try uploading a JPG/PNG (or ensure the image is not corrupted)."
+                        )
+                        st.exception(e)
+                        st.stop()
+
+
 
                 st.text_area("Extracted text", ocr_result["full_text"], height=200)
                 m1, m2 = st.columns(2)

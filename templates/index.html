@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block title %}Verify Document{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        AI-Powered Forensics
+      </div>
+      <h1 class="hero-title">Advanced Document Forgery Detection</h1>
+      <p class="hero-subtitle">
+        Protect yourself from document fraud with our cutting-edge AI-powered verification system.
+        Upload any document to instantly detect digital manipulation, text tampering, and signature anomalies.
+      </p>
+
+      <!-- Hero Features Grid -->
+      <div class="hero-features">
+        <div class="hero-feature">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+          </div>
+          <h3>What We Do</h3>
+          <p>Deep forensic analysis that detects manipulation, tampering, and forgery with precision</p>
+        </div>
+
+        <div class="hero-feature">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/>
+            </svg>
+          </div>
+          <h3>How It Works</h3>
+          <p>Multi-layer AI pipeline combining visual analysis, OCR, and forensic detection</p>
+        </div>
+
+        <div class="hero-feature">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <h3>The Technology</h3>
+          <p>Powered by ResNet50 CNN, EasyOCR, and advanced copy-move detection algorithms</p>
+        </div>
+      </div>
+
+      <!-- Tech Stack Display -->
+      <div class="hero-tech-stack">
+        <div class="tech-badge">Error Level Analysis (ELA)</div>
+        <div class="tech-badge">Deep Learning CNN</div>
+        <div class="tech-badge">OCR Analysis</div>
+        <div class="tech-badge">Forensic Detection</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Upload Card ── -->
+<section class="section">
+  <div class="container">
+    <div class="upload-card">
+      <form id="uploadForm" action="{{ url_for('analyze') }}" method="POST" enctype="multipart/form-data">
+        <div class="upload-area" id="dropZone">
+          <input type="file" id="fileInput" name="document" class="file-input"
+                 accept=".png,.jpg,.jpeg,.tiff,.bmp,.webp,.pdf" required />
+
+          <div class="upload-icon-wrap" id="uploadIcon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5
+                       m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+            </svg>
+          </div>
+
+          <div id="previewWrap" class="preview-wrap hidden">
+            <img id="previewImg" src="" alt="Preview" class="preview-img" />
+            <div class="preview-badge" id="previewBadge"></div>
+          </div>
+
+          <p class="upload-label" id="uploadLabel">
+            <strong>Click to upload</strong> or drag and drop your document
+          </p>
+          <p class="upload-sub" id="uploadSub">PNG, JPG, TIFF, BMP, PDF &mdash; max 16 MB</p>
+        </div>
+
+        <div class="upload-actions">
+          <button type="submit" class="btn btn-primary btn-lg" id="analyzeBtn" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            Analyse Document
+          </button>
+          <button type="button" class="btn btn-secondary" id="clearBtn" onclick="clearUpload()">
+            Clear
+          </button>
+        </div>
+
+        <!-- Loading overlay -->
+        <div class="loading-overlay hidden" id="loadingOverlay">
+          <div class="spinner"></div>
+          <p class="loading-text">Analysing document&hellip;</p>
+          <p class="loading-sub">Running ELA · OCR · Copy-Move Detection</p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ── How It Works ── -->
+<section class="section section-alt">
+  <div class="container">
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-subtitle">
+      Three independent AI modules analyse every document and their results are fused
+      into a single authenticity score.
+    </p>
+
+    <div class="cards-grid">
+      <div class="info-card">
+        <div class="info-icon info-icon--blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M3 9h18M9 21V9"/>
+          </svg>
+        </div>
+        <h3>Visual Analysis <span class="weight-tag">50%</span></h3>
+        <p>
+          Error Level Analysis (ELA) re-compresses the document and maps pixel-level
+          inconsistencies that reveal splicing, copy-paste edits, and JPEG manipulation.
+        </p>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon info-icon--purple">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586
+                     a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <h3>Text Extraction <span class="weight-tag">30%</span></h3>
+        <p>
+          EasyOCR reads names, dates, IDs, and labels from the document. Low-confidence
+          text blocks signal font replacement, text alterations, or unusual character
+          patterns.
+        </p>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon info-icon--red">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414
+                     A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4-4m0 0l4 4m-4-4v12"/>
+          </svg>
+        </div>
+        <h3>Forensic Detection <span class="weight-tag">20%</span></h3>
+        <p>
+          ORB keypoint matching with RANSAC homography identifies regions copied and
+          pasted within the same document — a common technique in certificate fraud.
+        </p>
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <span class="formula-label">Fusion Formula</span>
+      <code class="formula">Final Score = 0.5 × Visual + 0.3 × OCR + 0.2 × Forensic</code>
+      <span class="formula-note">Score ≥ 0.65 → Genuine | 0.40–0.64 → Suspicious | &lt; 0.40 → Forged</span>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Activate analyse button when file is picked
+  document.getElementById('fileInput').addEventListener('change', function () {
+    handleFileSelect(this.files[0]);
+  });
+
+  document.getElementById('uploadForm').addEventListener('submit', function (e) {
+    const fileInput = document.getElementById('fileInput');
+
+    // Validate that a file is selected
+    if (!fileInput.files || !fileInput.files[0]) {
+      e.preventDefault();
+      alert('Please select a document first');
+      return false;
+    }
+
+    // Show loading overlay only if file is selected
+    document.getElementById('loadingOverlay').classList.remove('hidden');
+  });
+</script>
+{% endblock %}

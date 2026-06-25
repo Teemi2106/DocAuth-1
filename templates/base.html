@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}DocVerify{% endblock %} — AI Document Verification
+    </title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/system.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <!-- ── Navigation ── -->
+    <nav class="nav app-nav">
+      <a class="nav-brand" href="{{ url_for('index') }}">
+        <div class="nav-brand-mark"></div>
+        DocVerify
+      </a>
+      <div class="nav-links">
+        <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" {% if request.endpoint == 'index' %}aria-current="page"{% endif %}>Verify</a>
+        <a href="{{ url_for('history') }}" class="nav-link {% if request.endpoint == 'history' %}active{% endif %}" {% if request.endpoint == 'history' %}aria-current="page"{% endif %}>History</a>
+      </div>
+    </nav>
+
+    <!-- ── Flash messages ── -->
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div class="flash-container">
+      {% for category, message in messages %}
+      <div class="flash flash-{{ category }}">
+        <span>{{ message }}</span>
+        <button class="flash-close" onclick="this.parentElement.remove()">
+          ×
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %} {% endwith %}
+
+    <!-- ── Main content ── -->
+    <main class="main-content">{% block content %}{% endblock %}</main>
+
+    <!-- ── Footer ── -->
+    <footer class="app-footer">
+      <p>
+        DocVerify &mdash; AI-Based Document Verification &amp; Forgery Detection
+        System
+      </p>
+      <p class="app-footer-sub">
+        Bowen University &middot; Department of Computer Science &middot;
+        BU22CSC1033
+      </p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>
