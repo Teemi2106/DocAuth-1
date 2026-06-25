@@ -18,9 +18,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy source
 COPY . .
 
-# Streamlit port
-EXPOSE 8501
+# Flask port
+EXPOSE 5000
 
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health || exit 1
+HEALTHCHECK CMD curl --fail http://localhost:5000/ || exit 1
 
-CMD ["streamlit", "run", "app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "web_app:app"]
