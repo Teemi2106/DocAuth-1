@@ -23,4 +23,4 @@ EXPOSE 5000
 
 HEALTHCHECK CMD curl --fail http://localhost:5000/ || exit 1
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "web_app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "app:app"]
