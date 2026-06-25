@@ -36,6 +36,10 @@ tqdm>=4.66.5
 python-dotenv>=1.0.0
 huggingface-hub>=0.24.0
 requests>=2.31.0
+gunicorn>=23.0.0
+
+# Web framework
+flask>=3.0.0
 
 # Notebooks
 jupyter>=1.1.0
